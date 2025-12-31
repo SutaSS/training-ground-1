@@ -5,7 +5,7 @@ import { config } from "../config/env.js";
 
 export const authService = {
   // register
-  async register(email, password, fullName) {
+  async register(email, password, fullName, phone, address) {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       throw new Error("User already exists");
@@ -58,34 +58,24 @@ export const authService = {
     };
   },
 
-  async getProfile(userId) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { profile: true },
-    });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      profile: user.profile,
-    };
-  },
-
-  //login
-
+  // login
   async login(email, password) {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ 
+      where: { email },
+      include: { profile: true }, // ← tambahkan ini
+    });
+    
     if (!user) {
       throw new Error("Invalid email or password");
     }
+    
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
       throw new Error("Invalid email or password");
+    }
+
+    if (user.status === 'blocked') {
+      throw new Error("Account is blocked");
     }
 
     const token = jwt.sign(
@@ -105,8 +95,7 @@ export const authService = {
     };
   },
 
-  //get profile
-
+  // get profile
   async getProfile(userId) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
