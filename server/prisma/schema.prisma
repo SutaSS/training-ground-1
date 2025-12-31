@@ -1,16 +1,234 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+}
+
+
+// ==================== ENUMS ====================
+enum UserRole {
+  admin
+  user
+}
+
+enum UserStatus {
+  active
+  blocked
+}
+
+enum BookCopyCondition {
+  good
+  damaged
+  lost
+}
+
+enum BookCopyStatus {
+  available
+  reserved
+  borrowed
+}
+
+enum LoanStatus {
+  active
+  returned
+  overdue
+  lost
+}
+
+enum ReservationStatus {
+  active
+  fulfilled
+  cancelled
+  expired
+}
+
+enum FineStatus {
+  unpaid
+  partial
+  paid
+}
+
+enum FineReason {
+  late
+  lost
+  damage
+}
+
+enum PaymentMethod {
+  cash
+  transfer
+  other
+}
+
+enum NotificationType {
+  due_soon
+  overdue
+  reservation_ready
+  fine_added
+}
+
+// ==================== MODELS ====================
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         UserRole  @default(user)
+  status       UserStatus @default(active)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  profile       Profile?
+  loans         Loan[]
+  reservations  Reservation[]
+  fines         Fine[]
+  payments      Payment[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique @map("user_id")
+  fullName  String?  @map("full_name")
+  phone     String?
+  address   String?
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Book {
+  id            Int      @id @default(autoincrement())
+  isbn13        String?  @unique
+  title         String
+  subtitle      String?
+  authors       String?
+  publisher     String?
+  publishedYear Int?     @map("published_year")
+  description   String?
+  coverUrl      String?  @map("cover_url")
+  category      String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  copies       BookCopy[]
+  reservations Reservation[]
+
+  @@map("books")
+}
+
+model BookCopy {
+  id        Int               @id @default(autoincrement())
+  bookId    Int               @map("book_id")
+  copyCode  String            @unique @map("copy_code")
+  condition BookCopyCondition @default(good)
+  status    BookCopyStatus    @default(available)
+  location  String?
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  book  Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  loans Loan[]
+
+  @@map("book_copies")
+}
+
+model Loan {
+  id         Int        @id @default(autoincrement())
+  userId     Int        @map("user_id")
+  copyId     Int        @map("copy_id")
+  status     LoanStatus @default(active)
+  loanDate   DateTime   @map("loan_date") @db.Date
+  dueDate    DateTime   @map("due_date") @db.Date
+  returnDate DateTime?  @map("return_date") @db.Date
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  copy BookCopy @relation(fields: [copyId], references: [id], onDelete: Cascade)
+  fine Fine?
+
+  @@index([copyId, status], name: "unique_active_loan")
+  @@map("loans")
+}
+
+model Reservation {
+  id            Int               @id @default(autoincrement())
+  userId        Int               @map("user_id")
+  bookId        Int               @map("book_id")
+  status        ReservationStatus @default(active)
+  queuePosition Int?              @map("queue_position")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([bookId, status, queuePosition])
+  @@map("reservations")
+}
+
+model Fine {
+  id          Int        @id @default(autoincrement())
+  loanId      Int        @unique @map("loan_id")
+  userId      Int        @map("user_id")
+  amountTotal Decimal    @map("amount_total") @db.Decimal(10, 2)
+  amountPaid  Decimal    @default(0) @map("amount_paid") @db.Decimal(10, 2)
+  status      FineStatus @default(unpaid)
+  reason      FineReason
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  loan     Loan      @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([userId, status])
+  @@map("fines")
+}
+
+model Payment {
+  id      Int           @id @default(autoincrement())
+  fineId  Int           @map("fine_id")
+  userId  Int           @map("user_id")
+  amount  Decimal       @db.Decimal(10, 2)
+  method  PaymentMethod
+  paidAt  DateTime      @default(now()) @map("paid_at")
+  note    String?
+
+  // Relations
+  fine Fine @relation(fields: [fineId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int              @map("user_id")
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
 }
