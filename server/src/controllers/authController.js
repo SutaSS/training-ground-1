@@ -60,18 +60,4 @@ export const authController = {
     }
   },
 
-  async getProfile(req, res, next) {
-    try {
-      const userId = req.user.userId; // dari middleware authenticate
-
-      const profile = await authService.getProfile(userId);
-
-      res.json({
-        success: true,
-        data: profile,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
 };
