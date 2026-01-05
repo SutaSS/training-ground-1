@@ -4,6 +4,7 @@ import bookRoutes from './bookRoutes.js';
 import profileRoutes from './profileRoutes.js';
 import loanRoutes from './loanRoutes.js';
 import fineRoutes from './fineRoutes.js';
+import notificationRoutes from './notificationRoutes.js';
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.use('/profile', profileRoutes);
 router.use('/loans', loanRoutes);
 router.use('/fines', userRoutes);
 router.use('/fines', fineRoutes);
+router.use('/notifications', notificationRoutes);
 
 // Health check
 router.get('/health', (req, res) => {
