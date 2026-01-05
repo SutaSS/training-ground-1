@@ -15,6 +15,7 @@ router.use('/loans', loanRoutes);
 router.use('/fines', userRoutes);
 router.use('/fines', fineRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/payments', paymentRoutes);
 
 // Health check
 router.get('/health', (req, res) => {
