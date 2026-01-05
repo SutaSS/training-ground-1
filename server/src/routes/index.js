@@ -3,6 +3,7 @@ import authRoutes from './authRoutes.js';
 import bookRoutes from './bookRoutes.js';
 import profileRoutes from './profileRoutes.js';
 import loanRoutes from './loanRoutes.js';
+import fineRoutes from './fineRoutes.js';
 
 const router = Router();
 
@@ -11,6 +12,7 @@ router.use('/books', bookRoutes);
 router.use('/profile', profileRoutes);
 router.use('/loans', loanRoutes);
 router.use('/fines', userRoutes);
+router.use('/fines', fineRoutes);
 
 // Health check
 router.get('/health', (req, res) => {
