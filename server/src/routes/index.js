@@ -10,6 +10,7 @@ router.use('/auth', authRoutes);
 router.use('/books', bookRoutes);
 router.use('/profile', profileRoutes);
 router.use('/loans', loanRoutes);
+router.use('/fines', userRoutes);
 
 // Health check
 router.get('/health', (req, res) => {
