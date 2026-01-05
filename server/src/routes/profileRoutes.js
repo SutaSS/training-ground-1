@@ -6,9 +6,9 @@ const router = Router();
 
 router.use(authenticate);
 
-router.get('/', authenticate, profileController.getProfile);
-router.put('/', authenticate, profileController.updateProfile);
-router.put('/avatar', authenticate, profileController.updateAvatar);
-router.post('/change-password', authenticate, profileController.changePassword);
+router.get('/', profileController.getProfile);
+router.put('/', profileController.updateProfile);
+router.put('/avatar', profileController.updateAvatar);
+router.post('/change-password', profileController.changePassword);
 
 export default router;
