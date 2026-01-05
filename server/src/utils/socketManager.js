@@ -6,7 +6,8 @@ export const initSocket = (socketIO) => {
   io.on('connection', (socket) => {
     console.log(`✅ Client connected: ${socket.id}`);
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (userId) => {
+      socket.join(userId.toString());
       console.log(`❌ Client disconnected: ${socket.id}`);
     });
   });
