@@ -1,19 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/authStore';
-
-// Pages
 import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import Home from './pages/user/Home';
-import Books from './pages/user/Books';
-import MyLoans from './pages/user/MyLoans';
-import Profile from './pages/user/Profile';
-import Dashboard from './pages/admin/Dashboard';
-
-// Layouts
-import UserLayout from './components/layout/UserLayout';
-import AdminLayout from './components/layout/AdminLayout';
 
 function App() {
   const { isAuthenticated, user } = useAuthStore();
@@ -24,46 +12,41 @@ function App() {
       
       <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" />} />
-        <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/" />} />
-
-        {/* User Routes */}
-        <Route path="/" element={<ProtectedRoute><UserLayout /></ProtectedRoute>}>
-          <Route index element={<Home />} />
-          <Route path="books" element={<Books />} />
-          <Route path="my-loans" element={<MyLoans />} />
-          <Route path="profile" element={<Profile />} />
-        </Route>
-
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-          <Route index element={<Dashboard />} />
-          <Route path="books" element={<div>Manage Books</div>} />
-          <Route path="loans" element={<div>Manage Loans</div>} />
-          <Route path="fines" element={<div>Manage Fines</div>} />
-        </Route>
-
-        {/* 404 */}
-        <Route path="*" element={<div>404 Not Found</div>} />
+        <Route 
+          path="/login" 
+          element={!isAuthenticated ? <Login /> : <Navigate to="/" />} 
+        />
+        
+        {/* Protected Routes */}
+        <Route 
+          path="/" 
+          element={
+            isAuthenticated ? (
+              <div className="min-h-screen bg-gray-100 p-8">
+                <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
+                  <h1 className="text-3xl font-bold mb-4">Welcome to Library System</h1>
+                  <p className="text-gray-600 mb-4">
+                    Logged in as: <strong>{user?.email}</strong>
+                  </p>
+                  <p className="text-gray-600 mb-4">
+                    Role: <strong className="uppercase">{user?.role}</strong>
+                  </p>
+                  <button
+                    onClick={() => useAuthStore.getState().logout()}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
       </Routes>
     </BrowserRouter>
   );
-}
-
-// Protected Route Wrapper
-function ProtectedRoute({ children }) {
-  const { isAuthenticated } = useAuthStore();
-  return isAuthenticated ? children : <Navigate to="/login" />;
-}
-
-// Admin Route Wrapper
-function AdminRoute({ children }) {
-  const { isAuthenticated, user } = useAuthStore();
-  
-  if (!isAuthenticated) return <Navigate to="/login" />;
-  if (user?.role !== 'admin') return <Navigate to="/" />;
-  
-  return children;
 }
 
 export default App;
