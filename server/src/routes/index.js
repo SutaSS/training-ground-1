@@ -5,6 +5,7 @@ import profileRoutes from './profileRoutes.js';
 import loanRoutes from './loanRoutes.js';
 import fineRoutes from './fineRoutes.js';
 import notificationRoutes from './notificationRoutes.js';
+import paymentRoutes from './paymentRoutes.js';
 
 const router = Router();
 
@@ -12,7 +13,6 @@ router.use('/auth', authRoutes);
 router.use('/books', bookRoutes);
 router.use('/profile', profileRoutes);
 router.use('/loans', loanRoutes);
-router.use('/fines', userRoutes);
 router.use('/fines', fineRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/payments', paymentRoutes);

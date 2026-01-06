@@ -26,7 +26,23 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", routes);
 
 //Error Handler
-app.use(errorHandler);
+app.use("/api",errorHandler);
+
+// ====== Serve static frontend in production ======
+if (config.nodeEnv === "production") {
+  //path folder build frontend
+  const clientBuildPath = path.join(__dirname, '../../client/dist');
+
+  //serve static files (css,js,img,etc)
+  app.use(express.static(clientBuildPath));
+
+  // Catch-all route: kirim index.html untuk semua route (SPA routing)
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
+
+}
+
 
 //Initialize Socket
 initSocket(io);
@@ -37,4 +53,8 @@ httpServer.listen(config.port, () => {
   );
   console.log(`JWT Expires In: ${config.jwtExpiresIn}`);
   console.log("websocket server is running");
+
+  if (config.nodeEnv === "production") {
+    console.log("Serving frontend static files from client/dist");
+  }
 });

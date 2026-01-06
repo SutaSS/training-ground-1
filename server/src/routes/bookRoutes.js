@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { bookController } from '../controllers/bookController';
+import { bookController } from '../controllers/bookController.js';
 import { authenticate, authorize } from '../middlewares/authMiddleware.js';
 
 const router = Router();
@@ -20,3 +20,5 @@ router.post('/:id/copies', authenticate, authorize('admin'), bookController.addB
 router.get('/:id/copies', authenticate, authorize('admin'), bookController.getBookCopies);
 router.put('/copies/:copyId', authenticate, authorize('admin'), bookController.updateBookCopy);
 router.delete('/copies/:copyId', authenticate, authorize('admin'), bookController.deleteBookCopy);
+
+export default router;
