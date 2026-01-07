@@ -3,8 +3,8 @@ import { emitNotification } from "../utils/socketManager.js";
 
 export const notificationService = {
   // Create Notification
-  async createNotification(userId, type, message) {
-    const notifiaction = await prisma.notification.create({
+  async createNotification(userId, type, title, message, metadata = null) {
+    const notification = await prisma.notification.create({
       data: {
         userId,
         type,
@@ -15,9 +15,9 @@ export const notificationService = {
       },
     });
 
-    emitNotification(userId, notifiaction);
+    emitNotification(userId, notification);
 
-    return notifiaction;
+    return notification;
   },
 
   //get user notifications
@@ -60,7 +60,7 @@ export const notificationService = {
 
   //mark as read
   async markAsRead(notificationId, userId) {
-    const notification = await prisma.notification.findMany({
+    const notification = await prisma.notification.findUnique({
       where: { id: notificationId },
     });
 
