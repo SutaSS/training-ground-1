@@ -151,4 +151,22 @@ export const bookService = {
     return copies;
   },
 
+  // Get available copies for borrowing (public)
+  async getAvailableCopies(bookId) {
+    const copies = await prisma.bookCopy.findMany({
+      where: {
+        bookId,
+        status: "available",
+      },
+      select: {
+        id: true,
+        condition: true,
+        status: true,
+        notes: true,
+      },
+    });
+
+    return copies;
+  },
+
 };
