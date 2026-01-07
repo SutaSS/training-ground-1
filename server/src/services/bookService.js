@@ -108,7 +108,7 @@ export const bookService = {
       where: { id: copyId },
       include: {
         loans: {
-          where: { status: { in: ["borrowed", "overdue"] } },
+          where: { status: { in: ["active", "overdue"] } },
         },
       },
     });
