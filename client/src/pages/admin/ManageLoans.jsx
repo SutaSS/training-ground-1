@@ -44,7 +44,7 @@ export default function ManageLoans() {
   };
 
   const isOverdue = (loan) => {
-    if (loan.status !== 'ACTIVE') return false;
+    if (loan.status !== 'active') return false;
     return new Date(loan.dueDate) < new Date();
   };
 
@@ -60,13 +60,15 @@ export default function ManageLoans() {
     }
     
     const statusColors = {
-      ACTIVE: 'bg-blue-100 text-blue-800',
-      RETURNED: 'bg-green-100 text-green-800',
+      active: 'bg-blue-100 text-blue-800',
+      returned: 'bg-green-100 text-green-800',
+      overdue: 'bg-orange-100 text-orange-800',
+      lost: 'bg-gray-100 text-gray-800',
     };
 
     return (
-      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[loan.status]}`}>
-        {loan.status}
+      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[loan.status] || 'bg-gray-100 text-gray-800'}`}>
+        {loan.status?.toUpperCase() || 'UNKNOWN'}
       </span>
     );
   };
@@ -137,25 +139,25 @@ export default function ManageLoans() {
                   <tr key={loan.id} className={isOverdue(loan) ? 'bg-red-50' : ''}>
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900">
-                        {loan.user.email}
+                        {loan.user?.email || 'N/A'}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {loan.user.profile?.fullName || 'N/A'}
+                        {loan.user?.profile?.fullName || 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900">
-                        {loan.bookCopy.book.title}
+                        {loan.copy?.book?.title || 'Unknown'}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {loan.bookCopy.book.author}
+                        {loan.copy?.book?.authors || 'Unknown'}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                      {loan.bookCopy.copyCode}
+                      {loan.copy?.copyCode || 'N/A'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                      {formatDate(loan.borrowDate)}
+                      {formatDate(loan.loanDate)}
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <span className={isOverdue(loan) ? 'text-red-600 font-bold' : 'text-gray-900'}>
@@ -166,7 +168,7 @@ export default function ManageLoans() {
                       {getStatusBadge(loan)}
                     </td>
                     <td className="px-6 py-4 text-right text-sm font-medium">
-                      {loan.status === 'ACTIVE' && (
+                      {loan.status === 'active' && (
                         <button
                           onClick={() => handleForceReturn(loan.id)}
                           className="text-blue-600 hover:text-blue-900"
@@ -176,7 +178,7 @@ export default function ManageLoans() {
                       )}
                       {loan.fine && (
                         <span className="ml-4 text-red-600">
-                          Fine: Rp {loan.fine.amount.toLocaleString()}
+                          Fine: Rp {loan.fine.amountTotal?.toLocaleString() || 0}
                         </span>
                       )}
                     </td>
@@ -196,7 +198,7 @@ export default function ManageLoans() {
           <div className="bg-white rounded-lg shadow p-4">
             <p className="text-gray-600 text-sm">Active Loans</p>
             <p className="text-2xl font-bold text-blue-600">
-              {loans.filter(l => l.status === 'ACTIVE').length}
+              {loans.filter(l => l.status === 'active').length}
             </p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
@@ -208,7 +210,7 @@ export default function ManageLoans() {
           <div className="bg-white rounded-lg shadow p-4">
             <p className="text-gray-600 text-sm">Returned</p>
             <p className="text-2xl font-bold text-green-600">
-              {loans.filter(l => l.status === 'RETURNED').length}
+              {loans.filter(l => l.status === 'returned').length}
             </p>
           </div>
         </div>
