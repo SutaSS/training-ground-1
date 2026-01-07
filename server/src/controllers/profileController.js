@@ -6,7 +6,7 @@ export const profileController = {
     try {
       const userId = req.user.userId;
 
-      const profile = await profileService.getProfileById(userId);
+      const profile = await profileService.getProfileByUserId(userId);
 
       res.json({
         success: true,

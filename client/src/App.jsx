@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import useAuthStore from './store/authStore';
 import { initializeSocket, disconnectSocket } from './utils/socketManager';
+import MainLayout from './components/layout/MainLayout';
 import PublicDashboard from './pages/publicDashboard';
 import Login from './pages/auth/Login';
 import Books from './pages/user/Books';
@@ -39,62 +40,63 @@ function App() {
       <Toaster position="top-right" />
       
       <Routes>
-        {/* Public Routes */}
+        {/* Public Routes - No Layout */}
         <Route path="/" element={<PublicDashboard />} />
         <Route 
           path="/login" 
-          element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} 
+          element={!isAuthenticated ? <Login /> : <Navigate to={user?.role === 'admin' ? '/dashboard' : '/books'} />} 
         />
         
-        {/* Protected Routes - User */}
-        <Route 
-          path="/books" 
-          element={isAuthenticated ? <Books /> : <Navigate to="/login" />} 
-        />
-        <Route 
-          path="/my-loans" 
-          element={isAuthenticated ? <MyLoans /> : <Navigate to="/login" />} 
-        />
-        <Route 
-          path="/my-fines" 
-          element={isAuthenticated ? <MyFines /> : <Navigate to="/login" />} 
-        />
-        <Route 
-          path="/profile" 
-          element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
-        />
-        
-        {/* Protected Routes - Dashboard */}
-        <Route 
-          path="/dashboard" 
-          element={
-            isAuthenticated ? (
-              user?.role === 'ADMIN' ? <AdminDashboard /> : <Navigate to="/books" />
-            ) : (
-              <Navigate to="/login" />
-            )
-          } 
-        />
-
-        {/* Protected Routes - Admin */}
-        <Route 
-          path="/admin/books" 
-          element={
-            isAuthenticated && user?.role === 'ADMIN' ? <ManageBooks /> : <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/admin/loans" 
-          element={
-            isAuthenticated && user?.role === 'ADMIN' ? <ManageLoans /> : <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/admin/fines" 
-          element={
-            isAuthenticated && user?.role === 'ADMIN' ? <ManageFines /> : <Navigate to="/login" />
-          } 
-        />
+        {/* Protected Routes with Layout */}
+        <Route element={<MainLayout />}>
+          {/* User Routes */}
+          <Route 
+            path="/books" 
+            element={isAuthenticated ? <Books /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/my-loans" 
+            element={isAuthenticated ? <MyLoans /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/my-fines" 
+            element={isAuthenticated ? <MyFines /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/profile" 
+            element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
+          />
+          
+          {/* Admin Routes */}
+          <Route 
+            path="/dashboard" 
+            element={
+              isAuthenticated ? (
+                user?.role === 'admin' ? <AdminDashboard /> : <Navigate to="/books" />
+              ) : (
+                <Navigate to="/login" />
+              )
+            } 
+          />
+          <Route 
+            path="/admin/books" 
+            element={
+              isAuthenticated && user?.role === 'admin' ? <ManageBooks /> : <Navigate to="/login" />
+            } 
+          />
+          <Route 
+            path="/admin/loans" 
+            element={
+              isAuthenticated && user?.role === 'admin' ? <ManageLoans /> : <Navigate to="/login" />
+            } 
+          />
+          <Route 
+            path="/admin/fines" 
+            element={
+              isAuthenticated && user?.role === 'admin' ? <ManageFines /> : <Navigate to="/login" />
+            } 
+          />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
