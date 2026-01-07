@@ -169,4 +169,223 @@ export const bookService = {
     return copies;
   },
 
+  // Search books
+  async searchBooks(query) {
+    const books = await prisma.book.findMany({
+      where: {
+        OR: [
+          { title: { contains: query, mode: "insensitive" } },
+          { authors: { contains: query, mode: "insensitive" } },
+          { isbn13: { contains: query, mode: "insensitive" } },
+        ],
+      },
+      include: {
+        _count: {
+          select: {
+            copies: true,
+          },
+        },
+        copies: {
+          where: { status: "available" },
+          select: { id: true },
+        },
+      },
+      take: 20,
+    });
+
+    return books;
+  },
+
+  // Get book by ID
+  async getBookById(bookId) {
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
+      include: {
+        _count: {
+          select: {
+            copies: true,
+          },
+        },
+        copies: {
+          where: { status: "available" },
+          select: { id: true, condition: true },
+        },
+      },
+    });
+
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    return book;
+  },
+
+  // Create book (admin)
+  async createBook(data) {
+    const { title, authors, publisher, publishedYear, category, isbn13, description, coverImageUrl } = data;
+
+    if (isbn13) {
+      const existingBook = await prisma.book.findUnique({
+        where: { isbn13 },
+      });
+
+      if (existingBook) {
+        throw new Error("Book with this ISBN already exists");
+      }
+    }
+
+    const book = await prisma.book.create({
+      data: {
+        title,
+        authors,
+        publisher,
+        publishedYear: publishedYear ? parseInt(publishedYear) : null,
+        category,
+        isbn13,
+        description,
+        coverImageUrl,
+      },
+      include: {
+        _count: {
+          select: { copies: true },
+        },
+      },
+    });
+
+    return book;
+  },
+
+  // Update book (admin)
+  async updateBook(bookId, data) {
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
+    });
+
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    if (data.isbn13 && data.isbn13 !== book.isbn13) {
+      const existingBook = await prisma.book.findUnique({
+        where: { isbn13: data.isbn13 },
+      });
+
+      if (existingBook) {
+        throw new Error("ISBN already used by another book");
+      }
+    }
+
+    const updatedBook = await prisma.book.update({
+      where: { id: bookId },
+      data: {
+        title: data.title || book.title,
+        authors: data.authors || book.authors,
+        publisher: data.publisher !== undefined ? data.publisher : book.publisher,
+        publishedYear: data.publishedYear !== undefined ? parseInt(data.publishedYear) : book.publishedYear,
+        category: data.category || book.category,
+        isbn13: data.isbn13 || book.isbn13,
+        description: data.description !== undefined ? data.description : book.description,
+        coverImageUrl: data.coverImageUrl !== undefined ? data.coverImageUrl : book.coverImageUrl,
+      },
+      include: {
+        _count: {
+          select: { copies: true },
+        },
+      },
+    });
+
+    return updatedBook;
+  },
+
+  // Delete book (admin)
+  async deleteBook(bookId) {
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
+      include: {
+        copies: {
+          include: {
+            loans: {
+              where: { status: { in: ["active", "overdue"] } },
+            },
+          },
+        },
+      },
+    });
+
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    const hasActiveLoans = book.copies.some(
+      (copy) => copy.loans && copy.loans.length > 0
+    );
+
+    if (hasActiveLoans) {
+      throw new Error("Cannot delete book with active loans");
+    }
+
+    await prisma.book.delete({
+      where: { id: bookId },
+    });
+
+    return { message: "Book deleted successfully" };
+  },
+
+  // Add book copy (admin)
+  async addBookCopy(bookId, data) {
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
+    });
+
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    const { copyCode, condition = "good", status = "available" } = data;
+
+    const existingCopy = await prisma.bookCopy.findUnique({
+      where: { copyCode },
+    });
+
+    if (existingCopy) {
+      throw new Error("Copy code already exists");
+    }
+
+    const copy = await prisma.bookCopy.create({
+      data: {
+        bookId,
+        copyCode,
+        condition,
+        status,
+      },
+    });
+
+    return copy;
+  },
+
+  // Get book copies (admin)
+  async getBookCopies(bookId) {
+    const copies = await prisma.bookCopy.findMany({
+      where: { bookId },
+      include: {
+        loans: {
+          where: { status: { in: ["active", "overdue"] } },
+          include: {
+            user: {
+              select: {
+                email: true,
+                profile: {
+                  select: { fullName: true },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return copies;
+  },
+
 };
