@@ -34,6 +34,12 @@ export default function Profile() {
         phone: userData.profile?.phone || '',
         address: userData.profile?.address || '',
       });
+      // Update user in auth store with status
+      updateUser({
+        status: userData.status,
+        role: userData.role,
+        profile: userData.profile,
+      });
     } catch (error) {
       toast.error('Failed to load profile');
     } finally {
@@ -186,9 +192,9 @@ export default function Profile() {
                       Account Status
                     </label>
                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      user?.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      user?.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
-                      {user?.status || 'UNKNOWN'}
+                      {user?.status ? user.status.toUpperCase() : 'UNKNOWN'}
                     </span>
                   </div>
                 </div>
