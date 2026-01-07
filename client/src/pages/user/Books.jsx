@@ -2,12 +2,15 @@
 import { useState, useEffect } from 'react';
 import { bookApi } from '../../api/bookAPI';
 import BookCard from '../../components/book/BookCard';
+import BookDetailModal from '../../components/book/BookDetailModal';
 import toast from 'react-hot-toast';
 
 export default function Books() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch books on mount
   useEffect(() => {
@@ -45,8 +48,18 @@ export default function Books() {
   };
 
   const handleViewDetail = (book) => {
-    // TODO: Open modal atau navigate ke detail page
-    alert(`Detail: ${book.title}`);
+    setSelectedBook(book);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedBook(null);
+  };
+
+  const handleBorrowSuccess = () => {
+    // Refresh books to update availability
+    fetchBooks();
   };
 
   return (
@@ -99,6 +112,16 @@ export default function Books() {
               />
             ))}
           </div>
+        )}
+
+        {/* Book Detail Modal */}
+        {selectedBook && (
+          <BookDetailModal
+            book={selectedBook}
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onBorrowSuccess={handleBorrowSuccess}
+          />
         )}
       </div>
     </div>
