@@ -48,7 +48,7 @@ export default function BookCard({ book, onViewDetail }) {
         onClick={() => onViewDetail(book)}
         className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
       >
-        View Detail
+        View Details
       </button>
     </div>
   );
