@@ -3,6 +3,8 @@ import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/authStore';
 import PublicDashboard from './pages/publicDashboard';
 import Login from './pages/auth/Login';
+import Books from './pages/user/Books';
+import MyLoans from './pages/user/MyLoans';
 
 function App() {
   const { isAuthenticated, user } = useAuthStore();
@@ -19,7 +21,17 @@ function App() {
           element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} 
         />
         
-        {/* Protected Routes */}
+        {/* Protected Routes - User */}
+        <Route 
+          path="/books" 
+          element={isAuthenticated ? <Books /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/my-loans" 
+          element={isAuthenticated ? <MyLoans /> : <Navigate to="/login" />} 
+        />
+        
+        {/* Protected Routes - Dashboard */}
         <Route 
           path="/dashboard" 
           element={
