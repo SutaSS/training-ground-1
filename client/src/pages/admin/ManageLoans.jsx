@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axiosInstance from '../../../api/axiosConfig';
+import axiosInstance from '../../api/axiosConfig';
 import toast from 'react-hot-toast';
 
 export default function ManageLoans() {

@@ -30,9 +30,9 @@ export default function Dashboard() {
         fineApi.getMyFines(),
       ]);
 
-      const books = booksRes.data;
-      const loans = loansRes.data;
-      const fines = finesRes.data;
+      const books = booksRes.data || [];
+      const loans = loansRes.data || [];
+      const fines = finesRes.data || [];
 
       // Calculate statistics
       const activeLoans = loans.filter(l => l.status === 'ACTIVE').length;

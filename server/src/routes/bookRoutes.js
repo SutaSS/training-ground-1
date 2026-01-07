@@ -5,7 +5,7 @@ import { authenticate, authorize } from '../middlewares/authMiddleware.js';
 const router = Router();
 
 // Public routes
-router.get('/books', bookController.getAllBooks);
+router.get('/', bookController.getAllBooks);
 router.get('/search', bookController.searchBooks);
 router.get('/:id', bookController.getBookById);
 router.get('/:id/available-copies', bookController.getAvailableCopies);

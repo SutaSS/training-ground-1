@@ -1,14 +1,14 @@
 // client/src/pages/user/Books.jsx
-import { useState, useEffect } from 'react';
-import { bookApi } from '../../api/bookAPI';
-import BookCard from '../../components/book/BookCard';
-import BookDetailModal from '../../components/book/BookDetailModal';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import { bookApi } from "../../api/bookAPI";
+import BookCard from "../../components/book/BookCard";
+import BookDetailModal from "../../components/book/BookDetailModal";
+import toast from "react-hot-toast";
 
 export default function Books() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -21,9 +21,12 @@ export default function Books() {
     setLoading(true);
     try {
       const response = await bookApi.getAllBooks();
-      setBooks(response.data);
+      console.log('Books response:', response);
+      setBooks(response.data || []);
     } catch (error) {
-      toast.error('Failed to load books');
+      console.error("Error loading books:", error);
+      console.error("Error response:", error.response);
+      toast.error("Failed to load books");
     } finally {
       setLoading(false);
     }
@@ -39,9 +42,11 @@ export default function Books() {
     setLoading(true);
     try {
       const response = await bookApi.searchBooks(searchQuery);
-      setBooks(response.data);
+      console.log('Search response:', response);
+      setBooks(response.data || []);
     } catch (error) {
-      toast.error('Search failed');
+      console.error("Search error:", error);
+      toast.error("Search failed");
     } finally {
       setLoading(false);
     }

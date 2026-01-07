@@ -27,8 +27,9 @@ export default function ManageBooks() {
     setLoading(true);
     try {
       const response = await bookApi.getAllBooks();
-      setBooks(response.data);
+      setBooks(response.data || []);
     } catch (error) {
+      console.error('Error loading books:', error);
       toast.error('Failed to load books');
     } finally {
       setLoading(false);
