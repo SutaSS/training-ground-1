@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import NotificationDropdown from '../common/NotificationDropdown';
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -59,6 +60,7 @@ export default function Navbar() {
 
                 {/* User Menu */}
                 <div className="flex items-center space-x-3">
+                  <NotificationDropdown />
                   <span className="text-gray-600 text-sm">
                     {user?.name || user?.email}
                   </span>

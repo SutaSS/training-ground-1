@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { useEffect } from 'react';
 import useAuthStore from './store/authStore';
+import { initializeSocket, disconnectSocket } from './utils/socketManager';
 import PublicDashboard from './pages/publicDashboard';
 import Login from './pages/auth/Login';
 import Books from './pages/user/Books';
@@ -10,6 +12,23 @@ import Profile from './pages/user/Profile';
 
 function App() {
   const { isAuthenticated, user } = useAuthStore();
+
+  useEffect(() => {
+    // Initialize socket connection when user is authenticated
+    if (isAuthenticated) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        initializeSocket(token);
+      }
+    } else {
+      // Disconnect socket when user logs out
+      disconnectSocket();
+    }
+
+    return () => {
+      disconnectSocket();
+    };
+  }, [isAuthenticated]);
 
   return (
     <BrowserRouter>
