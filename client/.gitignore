@@ -1,3 +1,10 @@
+#env
+.env/development
+.env/production
+client/.env
+client/.env.*
+!client/.env.example
+
 # Logs
 logs
 *.log
