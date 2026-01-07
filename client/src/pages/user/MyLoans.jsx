@@ -63,14 +63,22 @@ export default function MyLoans() {
 
   const getStatusBadge = (status) => {
     const statusColors = {
-      ACTIVE: 'bg-blue-100 text-blue-800',
-      RETURNED: 'bg-green-100 text-green-800',
-      OVERDUE: 'bg-red-100 text-red-800',
+      active: 'bg-blue-100 text-blue-800',
+      returned: 'bg-green-100 text-green-800',
+      overdue: 'bg-red-100 text-red-800',
+      lost: 'bg-gray-100 text-gray-800',
+    };
+
+    const statusLabels = {
+      active: 'Active',
+      returned: 'Returned',
+      overdue: 'Overdue',
+      lost: 'Lost',
     };
 
     return (
-      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusColors[status]}`}>
-        {status}
+      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusColors[status] || 'bg-gray-100 text-gray-800'}`}>
+        {statusLabels[status] || status}
       </span>
     );
   };
@@ -95,18 +103,18 @@ export default function MyLoans() {
               <div key={loan.id} className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold mb-2">{loan.bookCopy.book.title}</h3>
-                    <p className="text-gray-600 mb-1">Author: {loan.bookCopy.book.author}</p>
-                    <p className="text-gray-600 mb-1">Copy Code: {loan.bookCopy.copyCode}</p>
-                    <p className="text-gray-600 mb-1">Condition: {loan.bookCopy.condition}</p>
+                    <h3 className="text-xl font-bold mb-2">{loan.copy?.book?.title || 'Unknown Book'}</h3>
+                    <p className="text-gray-600 mb-1">Author: {loan.copy?.book?.authors || 'Unknown'}</p>
+                    <p className="text-gray-600 mb-1">Copy Code: {loan.copy?.copyCode || 'N/A'}</p>
+                    <p className="text-gray-600 mb-1">Condition: {loan.copy?.condition || 'N/A'}</p>
                     
                     <div className="mt-3 space-y-1">
                       <p className="text-sm">
-                        <span className="font-semibold">Borrowed:</span> {formatDate(loan.borrowDate)}
+                        <span className="font-semibold">Borrowed:</span> {formatDate(loan.loanDate)}
                       </p>
                       <p className="text-sm">
                         <span className="font-semibold">Due:</span>{' '}
-                        <span className={isOverdue(loan.dueDate) && loan.status === 'ACTIVE' ? 'text-red-600 font-bold' : ''}>
+                        <span className={isOverdue(loan.dueDate) && loan.status === 'active' ? 'text-red-600 font-bold' : ''}>
                           {formatDate(loan.dueDate)}
                         </span>
                       </p>
@@ -121,7 +129,7 @@ export default function MyLoans() {
                   <div className="ml-4 flex flex-col items-end gap-3">
                     {getStatusBadge(loan.status)}
                     
-                    {loan.status === 'ACTIVE' && (
+                    {loan.status === 'active' && (
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleRenew(loan.id)}
@@ -146,9 +154,9 @@ export default function MyLoans() {
                 {loan.fine && (
                   <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                     <p className="font-semibold text-red-800">Outstanding Fine</p>
-                    <p className="text-red-600">Amount: Rp {loan.fine.amount.toLocaleString()}</p>
+                    <p className="text-red-600">Amount: Rp {loan.fine.amountTotal?.toLocaleString() || 0}</p>
                     <p className="text-sm text-red-600">Reason: {loan.fine.reason}</p>
-                    {loan.fine.status === 'UNPAID' && (
+                    {loan.fine.status === 'unpaid' && (
                       <p className="text-xs text-red-500 mt-1">Please pay this fine before borrowing more books</p>
                     )}
                   </div>

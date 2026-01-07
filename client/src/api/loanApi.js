@@ -2,8 +2,8 @@ import axiosInstance from './axiosConfig';
 
 export const loanApi = {
   // Borrow a book
-  borrowBook: async (bookId) => {
-    const response = await axiosInstance.post('/loans/borrow', { bookId });
+  borrowBook: async (copyId) => {
+    const response = await axiosInstance.post('/loans/borrow', { copyId });
     return response.data;
   },
 

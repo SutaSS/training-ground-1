@@ -32,14 +32,17 @@ export default function BookDetailModal({ book, isOpen, onClose, onBorrowSuccess
       return;
     }
 
+    // Use the first available copy ID
+    const copyId = availableCopies[0].id;
+
     setBorrowing(true);
     try {
-      await loanApi.borrowBook(book.id);
+      await loanApi.borrowBook(copyId);
       toast.success('Book borrowed successfully!');
       onBorrowSuccess?.();
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to borrow book');
+      toast.error(error.response?.data?.message || 'Failed to borrow book');
     } finally {
       setBorrowing(false);
     }
