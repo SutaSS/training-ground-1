@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { bookApi } from '../../../api/bookAPI';
-import { loanApi } from '../../../api/loanApi';
-import { fineApi } from '../../../api/fineApi';
+import { bookApi } from '../../api/bookAPI';
+import { loanApi } from '../../api/loanApi';
+import { fineApi } from '../../api/fineApi';
 import toast from 'react-hot-toast';
 
 export default function Dashboard() {

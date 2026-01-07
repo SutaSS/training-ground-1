@@ -10,6 +10,7 @@ import MyLoans from './pages/user/MyLoans';
 import MyFines from './pages/user/MyFines';
 import Profile from './pages/user/Profile';
 import AdminDashboard from './pages/admin/Dashboard';
+import ManageBooks from './pages/admin/ManageBooks';
 
 function App() {
   const { isAuthenticated, user } = useAuthStore();
@@ -70,6 +71,14 @@ function App() {
             ) : (
               <Navigate to="/login" />
             )
+          } 
+        />
+
+        {/* Protected Routes - Admin */}
+        <Route 
+          path="/admin/books" 
+          element={
+            isAuthenticated && user?.role === 'ADMIN' ? <ManageBooks /> : <Navigate to="/login" />
           } 
         />
       </Routes>
