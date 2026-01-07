@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/authStore';
+import PublicDashboard from './pages/publicDashboard';
 import Login from './pages/auth/Login';
 
 function App() {
@@ -12,19 +13,20 @@ function App() {
       
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<PublicDashboard />} />
         <Route 
           path="/login" 
-          element={!isAuthenticated ? <Login /> : <Navigate to="/" />} 
+          element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} 
         />
         
         {/* Protected Routes */}
         <Route 
-          path="/" 
+          path="/dashboard" 
           element={
             isAuthenticated ? (
               <div className="min-h-screen bg-gray-100 p-8">
                 <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
-                  <h1 className="text-3xl font-bold mb-4">Welcome to Library System</h1>
+                  <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
                   <p className="text-gray-600 mb-4">
                     Logged in as: <strong>{user?.email}</strong>
                   </p>
