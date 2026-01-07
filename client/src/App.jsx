@@ -6,6 +6,7 @@ import { initializeSocket, disconnectSocket } from './utils/socketManager';
 import MainLayout from './components/layout/MainLayout';
 import PublicDashboard from './pages/publicDashboard';
 import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 import Books from './pages/user/Books';
 import MyLoans from './pages/user/MyLoans';
 import MyFines from './pages/user/MyFines';
@@ -45,6 +46,10 @@ function App() {
         <Route 
           path="/login" 
           element={!isAuthenticated ? <Login /> : <Navigate to={user?.role === 'admin' ? '/dashboard' : '/books'} />} 
+        />
+        <Route 
+          path="/register" 
+          element={!isAuthenticated ? <Register /> : <Navigate to={user?.role === 'admin' ? '/dashboard' : '/books'} />} 
         />
         
         {/* Protected Routes with Layout */}
