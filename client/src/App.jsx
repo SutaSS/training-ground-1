@@ -6,6 +6,7 @@ import Login from './pages/auth/Login';
 import Books from './pages/user/Books';
 import MyLoans from './pages/user/MyLoans';
 import MyFines from './pages/user/MyFines';
+import Profile from './pages/user/Profile';
 
 function App() {
   const { isAuthenticated, user } = useAuthStore();
@@ -34,6 +35,10 @@ function App() {
         <Route 
           path="/my-fines" 
           element={isAuthenticated ? <MyFines /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/profile" 
+          element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
         />
         
         {/* Protected Routes - Dashboard */}

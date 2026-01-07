@@ -50,6 +50,12 @@ export default function Navbar() {
                 >
                   My Fines
                 </Link>
+                <Link
+                  to="/profile"
+                  className="text-gray-700 hover:text-blue-600 font-medium"
+                >
+                  Profile
+                </Link>
 
                 {/* User Menu */}
                 <div className="flex items-center space-x-3">
