@@ -9,6 +9,7 @@ import Books from './pages/user/Books';
 import MyLoans from './pages/user/MyLoans';
 import MyFines from './pages/user/MyFines';
 import Profile from './pages/user/Profile';
+import AdminDashboard from './pages/admin/Dashboard';
 
 function App() {
   const { isAuthenticated, user } = useAuthStore();
@@ -65,23 +66,7 @@ function App() {
           path="/dashboard" 
           element={
             isAuthenticated ? (
-              <div className="min-h-screen bg-gray-100 p-8">
-                <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
-                  <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-                  <p className="text-gray-600 mb-4">
-                    Logged in as: <strong>{user?.email}</strong>
-                  </p>
-                  <p className="text-gray-600 mb-4">
-                    Role: <strong className="uppercase">{user?.role}</strong>
-                  </p>
-                  <button
-                    onClick={() => useAuthStore.getState().logout()}
-                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
+              user?.role === 'ADMIN' ? <AdminDashboard /> : <Navigate to="/books" />
             ) : (
               <Navigate to="/login" />
             )
