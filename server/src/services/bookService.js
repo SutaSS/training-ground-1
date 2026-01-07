@@ -54,6 +54,16 @@ export const bookService = {
       }),
       prisma.book.count({ where }),
     ]);
+
+    return {
+      books,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   },
 
   // Update book copy
