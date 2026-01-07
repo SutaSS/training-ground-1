@@ -58,6 +58,36 @@ export default function Navbar() {
                   Profile
                 </Link>
 
+                {/* Admin Links */}
+                {user?.role === 'ADMIN' && (
+                  <>
+                    <Link
+                      to="/dashboard"
+                      className="text-gray-700 hover:text-blue-600 font-medium"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      to="/admin/books"
+                      className="text-gray-700 hover:text-blue-600 font-medium"
+                    >
+                      Manage Books
+                    </Link>
+                    <Link
+                      to="/admin/loans"
+                      className="text-gray-700 hover:text-blue-600 font-medium"
+                    >
+                      Manage Loans
+                    </Link>
+                    <Link
+                      to="/admin/fines"
+                      className="text-gray-700 hover:text-blue-600 font-medium"
+                    >
+                      Manage Fines
+                    </Link>
+                  </>
+                )}
+
                 {/* User Menu */}
                 <div className="flex items-center space-x-3">
                   <NotificationDropdown />

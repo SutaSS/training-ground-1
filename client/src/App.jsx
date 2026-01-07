@@ -11,6 +11,8 @@ import MyFines from './pages/user/MyFines';
 import Profile from './pages/user/Profile';
 import AdminDashboard from './pages/admin/Dashboard';
 import ManageBooks from './pages/admin/ManageBooks';
+import ManageLoans from './pages/admin/ManageLoans';
+import ManageFines from './pages/admin/ManageFines';
 
 function App() {
   const { isAuthenticated, user } = useAuthStore();
@@ -79,6 +81,18 @@ function App() {
           path="/admin/books" 
           element={
             isAuthenticated && user?.role === 'ADMIN' ? <ManageBooks /> : <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/admin/loans" 
+          element={
+            isAuthenticated && user?.role === 'ADMIN' ? <ManageLoans /> : <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/admin/fines" 
+          element={
+            isAuthenticated && user?.role === 'ADMIN' ? <ManageFines /> : <Navigate to="/login" />
           } 
         />
       </Routes>
