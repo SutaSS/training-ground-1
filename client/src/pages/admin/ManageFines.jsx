@@ -14,11 +14,11 @@ export default function ManageFines() {
   const fetchFines = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get('/fines/statistics/summary');
-      // Get all fines - we need to create an endpoint for this or use another approach
-      const allFinesRes = await axiosInstance.get('/fines/my-fines');
-      setFines(allFinesRes.data.data);
+      // Fetch all fines for admin
+      const response = await axiosInstance.get('/fines');
+      setFines(response.data.data || []);
     } catch (error) {
+      console.error('Error loading fines:', error);
       toast.error('Failed to load fines');
     } finally {
       setLoading(false);
