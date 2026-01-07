@@ -187,7 +187,7 @@ export const loanService = {
       where.status = status;
     }
 
-    const loans = await prisma.loan.findmany({
+    const loans = await prisma.loan.findMany({
       where,
       include: {
         copy: {
@@ -195,7 +195,7 @@ export const loanService = {
         },
         fine: true,
       },
-      oderBy: {
+      orderBy: {
         loanDate: "desc",
       },
     });
@@ -212,12 +212,12 @@ export const loanService = {
         copy: {
           include: { book: true },
         },
-      },
-      user: {
-        include: { profile: true },
-      },
-      fine: {
-        include: { payments: true },
+        user: {
+          include: { profile: true },
+        },
+        fine: {
+          include: { payments: true },
+        },
       },
     });
 
