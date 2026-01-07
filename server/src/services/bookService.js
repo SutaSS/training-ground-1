@@ -134,17 +134,16 @@ export const bookService = {
         include: {
             loans: {
                 where: { status: { in: ["borrowed", "overdue"] } },
-            },
-            include: {
-                user: {
-                    select: {
-                        email: true,
-                        profile: {
-                            select: { fullName: true}
+                include: {
+                    user: {
+                        select: {
+                            email: true,
+                            profile: {
+                                select: { fullName: true }
+                            }
                         }
                     }
                 }
-
             }
         }
     });
