@@ -68,13 +68,13 @@ export const bookService = {
 
   // Update book copy
   async updateBookCopy(copyId, data) {
-    const { condition, status, notes } = data;
+    const { condition, status, location } = data;
 
     const copy = await prisma.bookCopy.findUnique({
       where: { id: copyId },
       include: {
         loans: {
-          where: { status: { in: ["borrowed", "overdue"] } },
+          where: { status: { in: ["active", "overdue"] } },
         },
       },
     });
@@ -95,7 +95,7 @@ export const bookService = {
       data: {
         condition: condition || copy.condition,
         status: status || copy.status,
-        notes: notes !== undefined ? notes : copy.notes,
+        location: location !== undefined ? location : copy.location,
       },
     });
 
@@ -160,9 +160,10 @@ export const bookService = {
       },
       select: {
         id: true,
+        copyCode: true,
         condition: true,
         status: true,
-        notes: true,
+        location: true,
       },
     });
 
