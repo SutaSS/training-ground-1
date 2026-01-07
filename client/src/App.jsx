@@ -5,6 +5,7 @@ import PublicDashboard from './pages/publicDashboard';
 import Login from './pages/auth/Login';
 import Books from './pages/user/Books';
 import MyLoans from './pages/user/MyLoans';
+import MyFines from './pages/user/MyFines';
 
 function App() {
   const { isAuthenticated, user } = useAuthStore();
@@ -29,6 +30,10 @@ function App() {
         <Route 
           path="/my-loans" 
           element={isAuthenticated ? <MyLoans /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/my-fines" 
+          element={isAuthenticated ? <MyFines /> : <Navigate to="/login" />} 
         />
         
         {/* Protected Routes - Dashboard */}
