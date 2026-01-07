@@ -51,7 +51,7 @@ export default function ManageLoans() {
   const filteredLoans = loans.filter((loan) => {
     if (filter === 'ALL') return true;
     if (filter === 'OVERDUE') return isOverdue(loan);
-    return loan.status === filter;
+    return loan.status === filter.toLowerCase();
   });
 
   const getStatusBadge = (loan) => {
