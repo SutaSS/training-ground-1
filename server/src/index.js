@@ -2,10 +2,15 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import path from "path";
+import { fileURLToPath } from "url";
 import { config } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { initSocket } from "./utils/socketManager.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
@@ -37,7 +42,8 @@ if (config.nodeEnv === "production") {
   app.use(express.static(clientBuildPath));
 
   // Catch-all route: kirim index.html untuk semua route (SPA routing)
-  app.get("*", (req, res) => {
+  // Express 5.x: gunakan middleware, bukan app.get("*")
+  app.use((req, res) => {
     res.sendFile(path.join(clientBuildPath, "index.html"));
   });
 
